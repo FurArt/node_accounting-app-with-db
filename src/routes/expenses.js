@@ -1,14 +1,17 @@
 const express = require('express');
 const { Expense, User } = require('../models');
 const { Op } = require('sequelize');
-const { formatExpenseResponse, formatExpensesResponse } = require('../utils/responseFormatters');
+const {
+  formatExpenseResponse,
+  formatExpensesResponse,
+} = require('../utils/responseFormatters');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
     const { userId, categories, from, to } = req.query;
 
-    let whereClause = {};
+    const whereClause = {};
 
     if (userId && !isNaN(userId)) {
       whereClause.user_id = parseInt(userId);
@@ -16,20 +19,23 @@ router.get('/', async (req, res) => {
 
     if (from && to) {
       whereClause.spent_at = {
-        [Op.between]: [new Date(from), new Date(to)]
+        [Op.between]: [new Date(from), new Date(to)],
       };
     }
 
     if (categories) {
-      const categoryList = Array.isArray(categories) ? categories : [categories];
+      const categoryList = Array.isArray(categories)
+        ? categories
+        : [categories];
+
       whereClause.category = {
-        [Op.in]: categoryList
+        [Op.in]: categoryList,
       };
     }
 
     const expenses = await Expense.findAll({
       where: whereClause,
-      order: [['spent_at', 'DESC']]
+      order: [['spent_at', 'DESC']],
     });
 
     res.status(200).json(formatExpensesResponse(expenses));
@@ -44,11 +50,12 @@ router.post('/', async (req, res) => {
 
     if (userId === undefined || !spentAt || !title || !amount || !category) {
       return res.status(400).json({
-        error: 'Bad request - Required fields are missing'
+        error: 'Bad request - Required fields are missing',
       });
     }
 
     const user = await User.findByPk(userId);
+
     if (!user) {
       return res.status(400).json({ error: 'Bad request - User not found' });
     }
@@ -57,13 +64,14 @@ router.post('/', async (req, res) => {
       where: {
         title,
         spent_at: new Date(spentAt),
-        user_id: userId
-      }
+        user_id: userId,
+      },
     });
 
     if (existingExpense) {
       return res.status(400).json({
-        error: 'Bad request - Expense with the same title and date already exists'
+        error:
+          'Bad request - Expense with the same title and date already exists',
       });
     }
 
@@ -73,7 +81,7 @@ router.post('/', async (req, res) => {
       title,
       amount,
       category,
-      note: note || ''
+      note: note || '',
     });
 
     res.status(201).json(formatExpenseResponse(newExpense));
@@ -87,7 +95,9 @@ router.get('/:id', async (req, res) => {
     const expenseId = parseInt(req.params.id);
 
     if (isNaN(expenseId)) {
-      return res.status(400).json({ error: 'Bad request - Invalid expense ID' });
+      return res
+        .status(400)
+        .json({ error: 'Bad request - Invalid expense ID' });
     }
 
     const expense = await Expense.findByPk(expenseId);
@@ -108,12 +118,14 @@ router.patch('/:id', async (req, res) => {
     const { spentAt, title, amount, category, note } = req.body;
 
     if (isNaN(expenseId)) {
-      return res.status(400).json({ error: 'Bad request - Invalid expense ID' });
+      return res
+        .status(400)
+        .json({ error: 'Bad request - Invalid expense ID' });
     }
 
     if (!spentAt && !title && !amount && !category && note === undefined) {
       return res.status(400).json({
-        error: 'Bad request - At least one field is required for update'
+        error: 'Bad request - At least one field is required for update',
       });
     }
 
@@ -123,11 +135,25 @@ router.patch('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Not found' });
     }
 
-    if (spentAt) expense.spent_at = new Date(spentAt);
-    if (title) expense.title = title;
-    if (amount) expense.amount = amount;
-    if (category) expense.category = category;
-    if (note !== undefined) expense.note = note;
+    if (spentAt) {
+      expense.spent_at = new Date(spentAt);
+    }
+
+    if (title) {
+      expense.title = title;
+    }
+
+    if (amount) {
+      expense.amount = amount;
+    }
+
+    if (category) {
+      expense.category = category;
+    }
+
+    if (note !== undefined) {
+      expense.note = note;
+    }
 
     await expense.save();
 
@@ -142,7 +168,9 @@ router.delete('/:id', async (req, res) => {
     const expenseId = parseInt(req.params.id);
 
     if (isNaN(expenseId)) {
-      return res.status(400).json({ error: 'Bad request - Invalid expense ID' });
+      return res
+        .status(400)
+        .json({ error: 'Bad request - Invalid expense ID' });
     }
 
     const expense = await Expense.findByPk(expenseId);

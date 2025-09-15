@@ -17,6 +17,14 @@ const formatExpenseResponse = (expense) => {
   };
 };
 
+const formatCategoryResponse = (category) => {
+  return {
+    id: category.id,
+    name: category.name,
+    description: category.description || ''
+  };
+};
+
 const formatUsersResponse = (users) => {
   return users.map(formatUserResponse);
 };
@@ -25,9 +33,15 @@ const formatExpensesResponse = (expenses) => {
   return expenses.map(formatExpenseResponse);
 };
 
+const formatCategoriesResponse = (categories) => {
+  return categories.map(formatCategoryResponse);
+};
+
 module.exports = {
   formatUserResponse,
   formatExpenseResponse,
+  formatCategoryResponse,
   formatUsersResponse,
-  formatExpensesResponse
+  formatExpensesResponse,
+  formatCategoriesResponse
 };

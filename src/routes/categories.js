@@ -1,13 +1,17 @@
 const express = require('express');
 const { Category } = require('../models');
-const { formatCategoryResponse, formatCategoriesResponse } = require('../utils/responseFormatters');
+const {
+  formatCategoryResponse,
+  formatCategoriesResponse,
+} = require('../utils/responseFormatters');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
     const categories = await Category.findAll({
-      order: [['name', 'ASC']]
+      order: [['name', 'ASC']],
     });
+
     res.status(200).json(formatCategoriesResponse(categories));
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -26,12 +30,13 @@ router.post('/', async (req, res) => {
 
     if (existingCategory) {
       return res.status(400).json({
-        error: 'Bad request - Category already exists'
+        error: 'Bad request - Category already exists',
       });
     }
 
     const newCategory = await Category.create({ name, description });
-    res.status(201).json(formatCategoryResponse(newCategory));
+
+    res.status(200).json(formatCategoryResponse(newCategory));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -59,7 +64,7 @@ router.patch('/:id', async (req, res) => {
 
     if (!name && !description) {
       return res.status(400).json({
-        error: 'Bad request - At least one field is required for update'
+        error: 'Bad request - At least one field is required for update',
       });
     }
 
@@ -69,8 +74,13 @@ router.patch('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Not found' });
     }
 
-    if (name) category.name = name;
-    if (description !== undefined) category.description = description;
+    if (name) {
+      category.name = name;
+    }
+
+    if (description !== undefined) {
+      category.description = description;
+    }
 
     await category.save();
 

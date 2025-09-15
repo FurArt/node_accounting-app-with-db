@@ -8,5 +8,5 @@ const Category = require('./Category.model');
 module.exports = {
   User,
   Expense,
-  Category
+  Category,
 };

@@ -1,11 +1,15 @@
 const express = require('express');
 const { User } = require('../models');
-const { formatUserResponse, formatUsersResponse } = require('../utils/responseFormatters');
+const {
+  formatUserResponse,
+  formatUsersResponse,
+} = require('../utils/responseFormatters');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
     const users = await User.findAll();
+
     res.status(200).json(formatUsersResponse(users));
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -23,11 +27,12 @@ router.post('/', async (req, res) => {
     const existingUser = await User.findOne({ where: { name } });
 
     if (existingUser) {
-      return res.status(201).json(formatUserResponse(existingUser));
+      return res.status(200).json(formatUserResponse(existingUser));
     }
 
     const newUser = await User.create({ name });
-    res.status(201).json(formatUserResponse(newUser));
+
+    res.status(200).json(formatUserResponse(newUser));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -84,19 +89,22 @@ router.patch('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
+console.log(`userId`);
 
-    if (isNaN(userId)) {
-      return res.status(400).json({ error: 'Bad request - Invalid user ID' });
-    }
 
-    const user = await User.findByPk(userId);
+if (isNaN(userId)) {
+  return res.status(400).json({ error: 'Bad request - Invalid user ID' });
+}
+
+const user = await User.findByPk(userId);
+console.log(user);
 
     if (!user) {
       return res.status(404).json({ error: 'Not found' });
     }
 
     await user.destroy();
-    res.status(204).send();
+    res.status(200).send();
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
