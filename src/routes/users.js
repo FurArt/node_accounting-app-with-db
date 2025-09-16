@@ -9,6 +9,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const users = await User.findAll();
+console.log(users);
 
     res.status(200).json(formatUsersResponse(users));
   } catch (error) {
@@ -105,6 +106,17 @@ console.log(user);
 
     await user.destroy();
     res.status(200).send();
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.post('/debug', async (req, res) => {
+  try {
+    const { name } = req.body;
+    const newUser = await User.create({ name });
+
+    res.status(200).json(newUser);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

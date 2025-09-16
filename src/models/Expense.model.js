@@ -23,7 +23,6 @@ const Expense = sequelize.define(
     spentAt: {
       type: DataTypes.DATE,
       allowNull: false,
-      field: 'spent_at',
     },
     title: {
       type: DataTypes.STRING,
@@ -57,9 +56,6 @@ const Expense = sequelize.define(
     indexes: [
       {
         fields: ['user_id'],
-      },
-      {
-        fields: ['spent_at'],
       },
       {
         fields: ['category'],

@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
     }
 
     if (from && to) {
-      whereClause.spent_at = {
+      whereClause.spentAt = {
         [Op.between]: [new Date(from), new Date(to)],
       };
     }
@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
 
     const expenses = await Expense.findAll({
       where: whereClause,
-      order: [['spent_at', 'DESC']],
+      order: [['spentAt', 'DESC']],
     });
 
     res.status(200).json(formatExpensesResponse(expenses));
@@ -60,24 +60,26 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'Bad request - User not found' });
     }
 
-    const existingExpense = await Expense.findOne({
-      where: {
-        title,
-        spent_at: new Date(spentAt),
-        user_id: userId,
-      },
-    });
+    // const existingExpense = await Expense.findOne({
+    //   where: {
+    //     title,
+    //     spentAt: new Date(spentAt),
+    //     user_id: userId,
+    //   },
+    // });
 
-    if (existingExpense) {
-      return res.status(400).json({
-        error:
-          'Bad request - Expense with the same title and date already exists',
-      });
-    }
+    // if (existingExpense) {
+    //   return res.status(400).json({
+    //     error:
+    //       'Bad request - Expense with the same title and date already exists',
+    //   });
+    // }
+
 
     const newExpense = await Expense.create({
+      userId:userId,
       user_id: userId,
-      spent_at: new Date(spentAt),
+      spentAt: new Date(spentAt),
       title,
       amount,
       category,
@@ -136,7 +138,7 @@ router.patch('/:id', async (req, res) => {
     }
 
     if (spentAt) {
-      expense.spent_at = new Date(spentAt);
+      expense.spentAt = new Date(spentAt);
     }
 
     if (title) {
