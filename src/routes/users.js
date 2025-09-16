@@ -9,7 +9,6 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     const users = await User.findAll();
-console.log(users);
 
     res.status(200).json(formatUsersResponse(users));
   } catch (error) {
@@ -90,15 +89,12 @@ router.patch('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
-console.log(`userId`);
 
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: 'Bad request - Invalid user ID' });
+    }
 
-if (isNaN(userId)) {
-  return res.status(400).json({ error: 'Bad request - Invalid user ID' });
-}
-
-const user = await User.findByPk(userId);
-console.log(user);
+    const user = await User.findByPk(userId);
 
     if (!user) {
       return res.status(404).json({ error: 'Not found' });

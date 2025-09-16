@@ -31,12 +31,11 @@ const sequelize = new Sequelize({
     max: 10,
     min: 0,
     acquire: 30000,
-    idle: 100000
-
+    idle: 100000,
   },
   retry: {
-    max: 3
-  }
+    max: 3,
+  },
 });
 
 module.exports = {

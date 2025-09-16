@@ -1,7 +1,7 @@
 const formatUserResponse = (user) => {
   return {
     id: user.id,
-    name: user.name
+    name: user.name,
   };
 };
 
@@ -13,7 +13,7 @@ const formatExpenseResponse = (expense) => {
     title: expense.title,
     amount: expense.amount,
     category: expense.category,
-    note: expense.note || ''
+    note: expense.note || '',
   };
 };
 
@@ -21,7 +21,7 @@ const formatCategoryResponse = (category) => {
   return {
     id: category.id,
     name: category.name,
-    description: category.description || ''
+    description: category.description || '',
   };
 };
 
@@ -43,5 +43,5 @@ module.exports = {
   formatCategoryResponse,
   formatUsersResponse,
   formatExpensesResponse,
-  formatCategoriesResponse
+  formatCategoriesResponse,
 };
