@@ -21,8 +21,18 @@ const User = sequelize.define(
   },
   {
     tableName: 'users',
-    timestamps: false,
+    timestamps: true,
+    underscored: true,
   },
 );
+
+// const origDestroy = User.destroy.bind(User);
+// User.destroy = function (options = {}) {
+//   if (options.truncate && !options.where) {
+//     options.where = {};
+//     options.restartIdentity = true;
+//   }
+//   return origDestroy(options);
+// };
 
 module.exports = User;

@@ -1,16 +1,20 @@
 const express = require('express');
-const { User } = require('../models');
+const { models } = require('../models/models');
+const { User } = models;
 const {
   formatUserResponse,
   formatUsersResponse,
 } = require('../utils/responseFormatters');
+const { sequelize } = require('../db');
+
 const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const users = await User.findAll();
-
-    res.status(200).json(formatUsersResponse(users));
+    await sequelize.transaction(async () => {
+      const users = await User.findAll();
+      res.status(200).json(formatUsersResponse(users));
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -32,7 +36,7 @@ router.post('/', async (req, res) => {
 
     const newUser = await User.create({ name });
 
-    res.status(200).json(formatUserResponse(newUser));
+    res.status(201).json(formatUserResponse(newUser));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -101,7 +105,7 @@ router.delete('/:id', async (req, res) => {
     }
 
     await user.destroy();
-    res.status(200).send();
+    res.status(204).send();
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

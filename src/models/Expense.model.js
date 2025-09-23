@@ -1,5 +1,3 @@
-'use strict';
-
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../db');
 
@@ -14,7 +12,6 @@ const Expense = sequelize.define(
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      field: 'user_id',
       references: {
         model: 'users',
         key: 'id',
@@ -26,9 +23,9 @@ const Expense = sequelize.define(
     },
     title: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       validate: {
-        notEmpty: true,
+        notEmpty: false,
       },
     },
     amount: {
@@ -40,9 +37,9 @@ const Expense = sequelize.define(
     },
     category: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
       validate: {
-        notEmpty: true,
+        notEmpty: false,
       },
     },
     note: {
@@ -53,9 +50,13 @@ const Expense = sequelize.define(
   {
     tableName: 'expenses',
     timestamps: false,
+    underscored: true,
     indexes: [
       {
         fields: ['user_id'],
+      },
+      {
+        fields: ['spent_at'],
       },
       {
         fields: ['category'],

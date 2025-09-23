@@ -1,6 +1,7 @@
 'use strict';
 
 const { Sequelize } = require('sequelize');
+const { TransactionNestMode } = require('sequelize');
 const utils = require('util');
 
 // Needed for testing purposes, do not remove
@@ -36,6 +37,7 @@ const sequelize = new Sequelize({
   retry: {
     max: 3,
   },
+  // defaultTransactionNestMode: TransactionNestMode.savepoint,
 });
 
 module.exports = {

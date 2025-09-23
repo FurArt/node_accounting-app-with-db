@@ -8,12 +8,12 @@ const formatUserResponse = (user) => {
 const formatExpenseResponse = (expense) => {
   return {
     id: expense.id,
-    userId: expense.userId || expense.user_id,
-    spentAt: expense.spentAt || expense.spent_at,
+    userId: expense.userId,
+    spentAt: expense.spentAt,
     title: expense.title,
     amount: expense.amount,
     category: expense.category,
-    note: expense.note || '',
+    note: expense.note || ''
   };
 };
 

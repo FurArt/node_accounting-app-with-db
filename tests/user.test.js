@@ -21,12 +21,43 @@ describe('User', () => {
 
   const HOST = 'http://localhost:7080/';
 
-  beforeAll(async () => {
-    try {
-      await sequelize.sync({ force: true });
-    } catch (err) {
-      console.log(err);
-    }
+  // beforeAll(async () => {
+  //   try {
+  //     await sequelize.sync({ force: true });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+
+  //   api = axios.create({
+  //     baseURL: HOST,
+  //     httpsAgent: new https.Agent({
+  //       rejectUnauthorized: false,
+  //     }),
+  //   });
+  // }, 7000);
+
+  // beforeEach(async () => {
+  //   server = createServer();
+
+  //   serverInstance = server.listen(7080, () => {
+  //     console.log(HOST);
+  //   });
+
+  //   await User.destroy({ truncate: true });
+  // });
+
+  // afterEach(async () => {
+  //   if (serverInstance) {
+  //     await serverInstance.close();
+  //   }
+  // });
+
+  // afterAll(async () => {
+  //   await sequelize.close();
+  // });
+
+ beforeAll(async () => {
+    await sequelize.sync({ force: true });
 
     api = axios.create({
       baseURL: HOST,
@@ -34,16 +65,22 @@ describe('User', () => {
         rejectUnauthorized: false,
       }),
     });
-  }, 7000);
+
+    [user, secondUser] = await Promise.all([
+      User.create({ name: 'John Doe' }),
+      User.create({ name: 'Jane Doe' }),
+    ]);
+  });
 
   beforeEach(async () => {
     server = createServer();
 
     serverInstance = server.listen(7080, () => {
+      // eslint-disable-next-line no-console
       console.log(HOST);
     });
 
-    await User.destroy({ truncate: true });
+    await Expense.destroy({ truncate: true });
   });
 
   afterEach(async () => {

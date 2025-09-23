@@ -7,6 +7,7 @@ const {
 const router = express.Router();
 
 router.get('/', async (req, res) => {
+
   try {
     const categories = await Category.findAll({
       order: [['name', 'ASC']],

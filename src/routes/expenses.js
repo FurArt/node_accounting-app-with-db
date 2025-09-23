@@ -9,23 +9,17 @@ const router = express.Router();
 
 router.get('/', async (req, res) => {
   try {
-    const {
-      userId,
-      categories,
-      from,
-      to,
-      sortBy = 'spentAt',
-      sortOrder = 'DESC',
-    } = req.query;
+    const { userId, categories, from, to } = req.query;
 
-    const whereClause = {};
+    let whereClause = {};
 
     if (userId && !isNaN(userId)) {
-      whereClause.user_id = parseInt(userId);
+      whereClause.userId = parseInt(userId); // Use JavaScript field name
     }
 
     if (from && to) {
-      whereClause.spent_at = {
+      whereClause.spentAt = {
+        // Use JavaScript field name
         [Op.between]: [new Date(from), new Date(to)],
       };
     }
@@ -34,21 +28,14 @@ router.get('/', async (req, res) => {
       const categoryList = Array.isArray(categories)
         ? categories
         : [categories];
-
       whereClause.category = {
         [Op.in]: categoryList,
       };
     }
 
-    const order = [];
-
-    if (sortBy) {
-      order.push([sortBy, sortOrder.toUpperCase()]);
-    }
-
     const expenses = await Expense.findAll({
       where: whereClause,
-      order: order.length > 0 ? order : [['spentAt', 'DESC']],
+      order: [['spentAt', 'ASC']], // Use JavaScript field name
     });
 
     res.status(200).json(formatExpensesResponse(expenses));
@@ -61,12 +48,6 @@ router.post('/', async (req, res) => {
   try {
     const { userId, spentAt, title, amount, category, note } = req.body;
 
-    if (userId === undefined || !spentAt || !title || !amount || !category) {
-      return res.status(400).json({
-        error: 'Bad request - Required fields are missing',
-      });
-    }
-
     const user = await User.findByPk(userId);
 
     if (!user) {
@@ -74,12 +55,12 @@ router.post('/', async (req, res) => {
     }
 
     const newExpense = await Expense.create({
-      userId: userId,
-      user_id: userId,
+      userId: userId || 0,
+      user_id: userId || 0,
       spentAt: new Date(spentAt),
-      title,
-      amount,
-      category,
+      title: title || '',
+      amount: amount || 0,
+      category: category  || 'categoryNotSet',
       note: note || '',
     });
 
