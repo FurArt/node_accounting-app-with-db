@@ -1,7 +1,7 @@
 'use strict';
 
 const { Sequelize } = require('sequelize');
-const { TransactionNestMode } = require('sequelize');
+// const { TransactionNestMode } = require('sequelize');
 const utils = require('util');
 
 // Needed for testing purposes, do not remove
@@ -27,7 +27,7 @@ const sequelize = new Sequelize({
   host: POSTGRES_HOST || 'localhost',
   dialect: 'postgres',
   port: POSTGRES_PORT || 5432,
-  password: POSTGRES_PASSWORD || 'web',
+  password: POSTGRES_PASSWORD,
   pool: {
     max: 10,
     min: 0,
@@ -37,7 +37,7 @@ const sequelize = new Sequelize({
   retry: {
     max: 3,
   },
-  // defaultTransactionNestMode: TransactionNestMode.savepoint,
+  //  defaultTransactionNestMode: TransactionNestMode.savepoint,
 });
 
 module.exports = {

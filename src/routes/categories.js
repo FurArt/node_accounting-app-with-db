@@ -7,7 +7,6 @@ const {
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-
   try {
     const categories = await Category.findAll({
       order: [['name', 'ASC']],
@@ -37,9 +36,16 @@ router.post('/', async (req, res) => {
 
     const newCategory = await Category.create({ name, description });
 
-    res.status(200).json(formatCategoryResponse(newCategory));
+    res.status(201).json(formatCategoryResponse(newCategory));
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    // res.status(500).json({ error: error.message });
+    if (
+      error.name === 'SequelizeValidationError' ||
+      error.name === 'SequelizeUniqueConstraintError'
+    ) {
+      return res.status(400).json({ error: error.message });
+    }
+    res.status(500).json({ error: 'An unexpected error occurred' });
   }
 });
 
@@ -60,6 +66,11 @@ router.get('/:id', async (req, res) => {
 
 router.patch('/:id', async (req, res) => {
   try {
+    if (isNaN(categoryId)) {
+      return res
+        .status(400)
+        .json({ error: 'Bad request - Category ID must be a valid integer.' });
+    }
     const categoryId = parseInt(req.params.id);
     const { name, description } = req.body;
 

@@ -10,6 +10,7 @@ const {
 const { createServer } = require('../src/createServer');
 const { sequelize } = require('../src/db');
 const { Agent } = require('http');
+const { truncate } = require('fs');
 
 // this prevents `socket hang up` for Node.js 20.10+
 axios.defaults.httpAgent = new Agent({ keepAlive: false });
@@ -19,45 +20,15 @@ describe('User', () => {
   let serverInstance;
   let api;
 
+
   const HOST = 'http://localhost:7080/';
 
-  // beforeAll(async () => {
-  //   try {
-  //     await sequelize.sync({ force: true });
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-
-  //   api = axios.create({
-  //     baseURL: HOST,
-  //     httpsAgent: new https.Agent({
-  //       rejectUnauthorized: false,
-  //     }),
-  //   });
-  // }, 7000);
-
-  // beforeEach(async () => {
-  //   server = createServer();
-
-  //   serverInstance = server.listen(7080, () => {
-  //     console.log(HOST);
-  //   });
-
-  //   await User.destroy({ truncate: true });
-  // });
-
-  // afterEach(async () => {
-  //   if (serverInstance) {
-  //     await serverInstance.close();
-  //   }
-  // });
-
-  // afterAll(async () => {
-  //   await sequelize.close();
-  // });
-
- beforeAll(async () => {
-    await sequelize.sync({ force: true });
+  beforeAll(async () => {
+    try {
+      await sequelize.sync({ force: true });
+    } catch (err) {
+      console.log(err);
+    }
 
     api = axios.create({
       baseURL: HOST,
@@ -65,22 +36,16 @@ describe('User', () => {
         rejectUnauthorized: false,
       }),
     });
-
-    [user, secondUser] = await Promise.all([
-      User.create({ name: 'John Doe' }),
-      User.create({ name: 'Jane Doe' }),
-    ]);
-  });
+  }, 7000);
 
   beforeEach(async () => {
     server = createServer();
 
     serverInstance = server.listen(7080, () => {
-      // eslint-disable-next-line no-console
       console.log(HOST);
     });
 
-    await Expense.destroy({ truncate: true });
+    // await User.destroy({ truncate: true })
   });
 
   afterEach(async () => {
@@ -123,9 +88,13 @@ describe('User', () => {
   });
 
   describe('getUsers', () => {
-    it('should return empty array if no users', async () => {
-      const response = await api.get('users');
 
+    it('should return empty array if no users', async () => {
+
+      await User.destroy({ truncate: true });
+
+      const response = await api.get('users');
+console.log("should return empty array if no users", response)
       expect(response.status).toBe(200);
 
       expect(response.headers['content-type']).toBe(
@@ -167,6 +136,7 @@ describe('User', () => {
 
   describe('getUser', () => {
     it('should return 404 if user does not exist', async () => {
+      // User.destroy({truncate:true});
       expect.assertions(1);
 
       await api

@@ -56,7 +56,7 @@ router.post('/', async (req, res) => {
 
     const newExpense = await Expense.create({
       userId: userId || 0,
-      user_id: userId || 0,
+      // user_id: userId || 0,
       spentAt: new Date(spentAt),
       title: title || '',
       amount: amount || 0,
